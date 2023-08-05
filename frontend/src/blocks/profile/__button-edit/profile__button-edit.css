@@ -1,0 +1,21 @@
+.profile__button-edit {
+  grid-area: button;
+  margin-top: 18px;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border: 1px solid #FFFFFF;
+  background: no-repeat center rgba(0, 0, 0, 0) url(../../../images/Button-vector-edit.svg);
+
+}
+
+@media (max-width: 880px){
+  .profile__button-edit {
+    width: 18px;
+    height: 18px;
+    background-size: 7px;
+    margin: auto;
+  }
+}

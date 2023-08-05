@@ -1,0 +1,26 @@
+.profile__data {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-rows: auto 8px auto;
+      grid-template-areas:
+  "name button"
+  "activity activity";
+  -ms-flex-line-pack: center;
+      align-content: center;
+  row-gap: 8px;
+  -webkit-column-gap: 19px;
+     -moz-column-gap: 19px;
+          column-gap: 19px;
+  -ms-grid-columns: -webkit-max-content;
+  -ms-grid-columns: max-content;
+  grid-template-columns: -webkit-max-content;
+  grid-template-columns: max-content;
+}
+
+@media (max-width: 880px) {
+  .profile__data {
+    -webkit-column-gap: 10px;
+       -moz-column-gap: 10px;
+            column-gap: 10px;
+  }
+}

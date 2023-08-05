@@ -1,0 +1,5 @@
+.content-auth {
+  padding-top: 40px;
+  flex: auto;
+  height: calc(100vh - 120px - 40px - 145px);
+}

@@ -1,0 +1,32 @@
+.auth__input {
+  border: none;
+  border-bottom: 2px solid #CCCCCC;
+  background: transparent;
+  padding-bottom: 8px;
+  color: #FFFFFF;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.21;
+}
+
+.auth__input:-webkit-autofill {
+  -webkit-text-fill-color: #FFFFFF;
+  transition: background-color 5000s ease-in-out 0s;
+}
+.auth__input:-webkit-autofill,
+.auth__input:-webkit-autofill:focus,
+.auth__input:-webkit-autofill:hover {
+  background-color: transparent;
+  color: #FFFFFF;
+}
+
+.auth__input:last-of-type {
+  margin-bottom: 188px;
+}
+
+
+@media (max-width: 880px){
+  .auth__input:last-of-type {
+    margin-bottom: 145px;
+  }
+ }

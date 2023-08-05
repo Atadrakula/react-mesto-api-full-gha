@@ -1,0 +1,11 @@
+.popup__close_type_popup-edit {
+  top: calc(50% - 165px - 8px - 32px);
+  right: calc(50% - 215px - 8px - 32px);
+}
+
+@media (max-width: 600px) {
+  .popup__close_type_popup-edit {
+    top: calc(50% - 161px - 16px - 20px);
+    right: calc(50% - 141px);
+  }
+}
