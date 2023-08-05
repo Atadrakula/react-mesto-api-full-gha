@@ -15,6 +15,8 @@ mongoose.connect(DB_URL, {
   useNewUrlParser: true,
 });
 
+app.use(cors);
+
 app.use(helmet());
 app.use((req, res, next) => {
   // eslint-disable-next-line no-console
@@ -22,8 +24,6 @@ app.use((req, res, next) => {
   next();
 });
 app.use(express.json());
-
-app.use(cors);
 
 app.use(requestLogger);
 
