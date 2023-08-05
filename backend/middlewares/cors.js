@@ -1,22 +1,24 @@
 const allowedCors = [
   'https://web.portfolio.nomoreparties.co',
-  'localhost:3000',
+  'http://web.portfolio.nomoreparties.co',
+  'http://localhost:3000',
+  'https://localhost:3000',
 ];
 
-// const allowedHeaders = [
-//   'Content-Type',
-//   'Origin',
-//   'Accept',
-//   'Authorization',
-//   'Access-Control-Request-Method',
-//   'Access-Control-Request-Headers'
-// ];
+const allowedHeaders = [
+  'Content-Type',
+  'Origin',
+  'Accept',
+  'Authorization',
+  'Access-Control-Request-Method',
+  'Access-Control-Request-Headers',
+];
+
+const DEFAULT_ALLOWED_METHODS = 'GET,PUT,PATCH,POST,DELETE';
 
 module.exports = (req, res, next) => {
   const { origin } = req.headers; // Сохраняем источник запроса в переменную origin
   const { method } = req; // Сохраняем тип запроса (HTTP-метод) в соответствующую переменную
-  const requestHeaders = req.headers['access-control-request-headers'];
-  const DEFAULT_ALLOWED_METHODS = 'GET,PUT,PATCH,POST,DELETE';
   // проверяем, что источник запроса есть среди разрешённых
   if (allowedCors.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
@@ -27,7 +29,7 @@ module.exports = (req, res, next) => {
     // разрешаем кросс-доменные запросы с этими методами
     res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
     // разрешаем кросс-доменные запросы с этими заголовками
-    res.header('Access-Control-Allow-Headers', requestHeaders);
+    res.header('Access-Control-Allow-Headers', allowedHeaders.join(','));
 
     return res.status(200).end();
   }
