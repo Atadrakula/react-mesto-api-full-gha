@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const helmet = require('helmet');
 const { errorHandler, celebrateError } = require('./middlewares/errorsHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const cors = require('./middlewares/cors');
 
 const routers = require('./routes');
 
@@ -21,6 +22,8 @@ app.use((req, res, next) => {
   next();
 });
 app.use(express.json());
+
+app.use(cors);
 
 app.use(requestLogger);
 
