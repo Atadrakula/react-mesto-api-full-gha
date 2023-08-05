@@ -11,6 +11,8 @@ const routers = require('./routes');
 const { PORT = 3000, DB_URL = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 const app = express();
 
+app.use(cors());
+
 mongoose.connect(DB_URL, {
   useNewUrlParser: true,
 });
@@ -22,8 +24,6 @@ app.use((req, res, next) => {
   next();
 });
 app.use(express.json());
-
-app.use(cors());
 
 app.use(requestLogger);
 
