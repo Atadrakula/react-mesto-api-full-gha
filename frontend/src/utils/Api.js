@@ -12,7 +12,8 @@ class Api {
   }
 
   _request(endpoint, options) {
-    return fetch(`${this._generalUrl}${endpoint}`, { ...options, headers: this._headers }).then(this._checkResponse);
+    // return fetch(`${this._generalUrl}${endpoint}`, { ...options, headers: this._headers }).then(this._checkResponse);
+    return fetch(`${this._generalUrl}${endpoint}`, { ...options, headers: this._headers, credentials: 'include' }).then(this._checkResponse);
   }
 
   pullProfileInfo() {
@@ -80,7 +81,8 @@ class Api {
 }
 
 const serverConfig = {
-  url: 'https://api.web.portfolio.nomoreparties.co',
+  // url: 'https://api.web.portfolio.nomoreparties.co',
+  url: 'http://localhost:3001',
   headers: {
     'Content-Type': 'application/json'
   }

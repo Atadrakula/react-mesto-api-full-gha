@@ -7,6 +7,8 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, onCardLike
   const currentUser = useContext(CurrentUserContext);
   const { name, about, avatar } = currentUser || {};
 
+  const actualCards = Array.isArray(cards) ? cards : cards.data;
+
   return (
     <main className="content">
       <section className="profile">
@@ -41,8 +43,8 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, onCardLike
       </section>
       <section className="places">
         <ul className="places__cards">
-          {cards.map((card) => (
-            <Card card={card} onCardClick={onCardClick} key={card._id} onCardLike={onCardLike} onCardDelete={onCardDelete}/>
+          {actualCards.map((card) => (
+            card && <Card card={card} onCardClick={onCardClick} key={card._id} onCardLike={onCardLike} onCardDelete={onCardDelete}/>
           ))}
         </ul>
       </section>

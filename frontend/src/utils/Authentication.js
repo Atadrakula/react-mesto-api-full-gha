@@ -29,6 +29,7 @@ class Authentication {
   pushLogin(data) {
     return this._request('/signin', this._headers, {
       method: 'POST',
+      credentials: 'include',
       body: JSON.stringify({
         password: data.password,
         email: data.email
@@ -43,19 +44,24 @@ class Authentication {
   }
 
   pullDataAuth() {
-    return this._request('/users/me',
-    {...this.headers, 'Authorization' : `Bearer ${this._token}`});
+    return this._request('/users/me', {
+      headers: {
+        ...this._headers,
+        'Authorization': `Bearer ${this._token}`
+      },
+      credentials: 'include'
+    });
   }
 
   setToken(token) {
     this._token = token;
     localStorage.setItem('jwt', token);
   }
-
 }
 
 const serverConfig = {
-  url: 'https://api.web.portfolio.nomoreparties.co',
+  // url: 'https://api.web.portfolio.nomoreparties.co',
+  url: 'http://localhost:3001',
   headers: {
     'Content-Type': 'application/json'
   }

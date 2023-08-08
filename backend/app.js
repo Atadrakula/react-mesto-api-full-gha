@@ -2,16 +2,18 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
+const cors = require('cors');
 const { errorHandler, celebrateError } = require('./middlewares/errorsHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const cors = require('./middlewares/cors');
+// const cors = require('./middlewares/cors');
 
 const routers = require('./routes');
 
 const { PORT, DB_URL } = process.env;
 const app = express();
 
-app.use(cors);
+// app.use(cors());
+app.use(cors({ origin: ['http://localhost:3000', 'https://web.portfolio.nomoreparties.co'], credentials: true, maxAge: 30 }));
 
 mongoose.connect(DB_URL, {
   useNewUrlParser: true,

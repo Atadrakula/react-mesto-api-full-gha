@@ -1,8 +1,14 @@
 function PopupWithForm({isOpen, onClose, name, title, children, onSubmit}) {
   const popupVisibleClass = `popup ${isOpen ? 'popup_visible' : '' }`;
 
+  const handleBackgroundClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
 	return (
-    <div className={popupVisibleClass} id={name} onClick={onClose}>
+    <div className={popupVisibleClass} id={name} onClick={handleBackgroundClick}>
       <div className="popup__container">
         <button
           aria-label="Закрыть"

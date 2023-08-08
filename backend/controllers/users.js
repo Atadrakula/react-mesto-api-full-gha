@@ -28,7 +28,7 @@ const login = (req, res, next) => {
         httpOnly: true,
         sameSite: 'none',
         // передача только по HTTPS
-        // secure: true,
+        secure: true,
       });
 
       res.send({ token });

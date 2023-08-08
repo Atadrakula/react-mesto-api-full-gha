@@ -3,10 +3,10 @@ const allowedCors = [
   'http://web.portfolio.nomoreparties.co',
   'http://localhost:3000',
   'https://localhost:3000',
+  'http://127.0.0.1:3000',
+  'https://127.0.0.1:3000',
   'https://127.0.0.1:27017',
   'http://127.0.0.1:27017',
-  'https://127.0.0.1:3000',
-  'http://127.0.0.1:3000',
 ];
 
 const allowedHeaders = [
@@ -26,8 +26,6 @@ module.exports = (req, res, next) => {
   // проверяем, что источник запроса есть среди разрешённых
   if (allowedCors.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
-  } else {
-    res.header('Access-Control-Allow-Origin', '*');
   }
 
   if (method === 'OPTIONS') {
