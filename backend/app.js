@@ -13,7 +13,7 @@ const { PORT, DB_URL } = process.env;
 const app = express();
 
 // app.use(cors());
-app.use(cors({ origin: ['http://localhost:3000', 'https://web.portfolio.nomoreparties.co'], credentials: true, maxAge: 30 }));
+app.use(cors({ origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://web.portfolio.nomoreparties.co'], credentials: true, maxAge: 30 }));
 
 mongoose.connect(DB_URL, {
   useNewUrlParser: true,

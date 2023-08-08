@@ -7,13 +7,17 @@ class Authentication {
 
   _checkResponse(response) {
     if (!response.ok) {
-      return Promise.reject(`Ошибка: ${response.status}`);
+        console.error(`Error response from ${response.url}: ${response.status}`);
+        if (response.status === 401) {
+            return Promise.reject('Токен недействителен или отсутствует');
+        }
+        return Promise.reject(`Ошибка: ${response.status}`);
     }
     return response.json();
-  }
+}
 
   _request(endpoint, headers, options) {
-    return fetch(`${this._generalUrl}${endpoint}`, { ...options, headers: headers }).then(this._checkResponse);
+    return fetch(`${this._generalUrl}${endpoint}`, { ...options, headers: this._headers, credentials: 'include' }).then(this._checkResponse);
   }
 
   pushRegistration(data) {
@@ -29,34 +33,25 @@ class Authentication {
   pushLogin(data) {
     return this._request('/signin', this._headers, {
       method: 'POST',
-      credentials: 'include',
       body: JSON.stringify({
         password: data.password,
         email: data.email
       })
     })
     .then(res => {
-      if (res.token) {
-        this.setToken(res.token);
-      }
       return res;
-    })
-  }
+    });
+}
 
   pullDataAuth() {
-    return this._request('/users/me', {
-      headers: {
-        ...this._headers,
-        'Authorization': `Bearer ${this._token}`
-      },
-      credentials: 'include'
-    });
-  }
+    return this._request('/users/me', this._headers);
+}
 
-  setToken(token) {
-    this._token = token;
-    localStorage.setItem('jwt', token);
-  }
+  pushLogout() {
+    return this._request(`/signout`, this._headers, {
+      method: 'POST'
+  });
+}
 }
 
 const serverConfig = {

@@ -27,7 +27,11 @@ function App() {
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
   const [isSelectedCard, setSelectedCard] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState({
+    name: "Жак-Ив Куст",
+    about: "Исследователь",
+    avatar: "https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png",
+  });
   const [loadingText, setLoadingText] = useState(null);
   const [isDoneInfoToolTip, setDoneInfoToolTip] = useState(false);
   const [isDismissInfoToolTip, setDismissInfoToolTip] = useState(false);
@@ -39,71 +43,56 @@ function App() {
 
   useEffect(() => {
     const checkToken = async () => {
-      const token = localStorage.getItem('jwt');
-      if (token) {
         try {
-          authenticationApi.setToken(token);
-          const userData = await authenticationApi.pullDataAuth();
-          setEmail(userData.data.email);
-          setLoggedIn(true);
-          navigate('/main', {replace: true});
+            const userData = await authenticationApi.pullDataAuth();
+            setEmail(userData.data.email);
+            setLoggedIn(true);
+            navigate('/main', {replace: true});
         } catch (error) {
-          console.error(`Ошибка при загрузке данных пользователя: ${error}`);
-          setLoggedIn(false);
+            if (error.message === 'Токен недействителен или отсутствует') {
+                // здесь можно добавить перенаправление на страницу входа или обновить состояние
+                navigate('/sign-in', {replace: true});  // Например, перенаправляем пользователя на страницу входа
+            }
+            console.error(`Ошибка при загрузке данных пользователя: ${error}`);
+            setLoggedIn(false);
         }
-      } else {
-        setLoggedIn(false);
-      }
     };
     checkToken();
-  }, []);
+}, []);
 
-  useEffect(() => {
-    const getUserInfo = async () => {
-      try {
-        const dataCards = await api.pullCardInfo();
-        setCards(dataCards);
-      } catch (error) {
-        console.error(`Ошибка при загрузке данных пользователя: ${error}`);
-      }
-    };
 
-    if(loggedIn) {
-      getUserInfo();
-    }
-  }, [setCards, loggedIn]);
 
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const dataUser = await api.pullProfileInfo();
-        setCurrentUser(dataUser);
-      } catch (error) {
-        console.error(`Ошибка при загрузке данных пользователя: ${error}`);
-      }
+useEffect(() => {
+  const fetchData = async () => {
+    if (!loggedIn) return;
 
-    }
-
-    if(loggedIn) {
-      fetchUserInfo();
-    }
-
-  }, [loggedIn]);
-
-  async function handleLogin(data) {
     try {
-      const result = await authenticationApi.pushLogin(data);
-      if (result.token) {
-        authenticationApi.setToken(result.token);
-        setEmail(data.email);
-        setLoggedIn(true);
-        navigate('/main', {replace: true});
-      }
+      const [dataCards, dataUser] = await Promise.all([
+        api.pullCardInfo(),
+        api.pullProfileInfo(),
+      ]);
+      setCards(dataCards.data || []);
+      setCurrentUser(dataUser.data || {});
+
     } catch (error) {
-      console.error(`Ошибка при отправки данных регистрации пользователя: ${error}`);
-      openDismissInfoToolTip();
+      console.error("Ошибка при загрузке данных:", error);
     }
+  };
+
+  fetchData();
+}, [loggedIn]);
+
+async function handleLogin(data) {
+  try {
+    await authenticationApi.pushLogin(data);
+    setEmail(data.email);
+    setLoggedIn(true);
+    navigate('/main', {replace: true});
+  } catch (error) {
+    console.error(`Ошибка при отправки данных регистрации пользователя: ${error}`);
+    openDismissInfoToolTip();
   }
+}
 
   async function handleRegister(data) {
     try {
@@ -119,13 +108,13 @@ function App() {
   }
 
   async function handleCardLike(targetCard) {
-
-    const isLiked = targetCard.likes.some(i => i._id === currentUser._id);
+    const isLiked = targetCard.likes.some(i => i === currentUser._id);
 
     try {
       const checkedCard = await api.toggleLikeCard(targetCard._id, !isLiked);
-      const newCards = cards.map(card => card._id === checkedCard._id ? checkedCard : card);
+      const newCards = cards.map(card => card._id === checkedCard.data._id ? checkedCard.data : card);
       setCards(newCards);
+
     } catch (error) {
       console.error("Ошибка при лайке/дизлайке карточки:", error);
     }
@@ -145,7 +134,7 @@ function App() {
     try {
       setLoadingText('Сохранение...');
       const updateData = await api.patchProfileInfo(dataUser);
-      setCurrentUser(updateData);
+      setCurrentUser(updateData.data);
       closeAllPopups();
     } catch (error) {
       console.error("Ошибка при обновлении данных пользователя:", error);
@@ -158,7 +147,7 @@ function App() {
     try {
       setLoadingText('Сохранение...');
       const updateAvatar = await api.pushAvatar(avatarLink);
-      setCurrentUser(updateAvatar);
+      setCurrentUser(updateAvatar.data);
       closeAllPopups();
     } catch (error) {
       console.error("Ошибка при обновлении данных пользователя:", error);
@@ -171,7 +160,7 @@ function App() {
     try {
       setLoadingText('Создание...');
       const pushCardInfo = await api.pushCardInfo(dataCard);
-      setCards([pushCardInfo, ...cards]);
+      setCards([pushCardInfo.data, ...cards]);
       closeAllPopups();
     } catch (error) {
       console.error(`Ошибка при загрузке данных новой карточки: ${error}`);
@@ -180,11 +169,14 @@ function App() {
     }
   }
 
-  function handleSignOut() {
-    setLoggedIn(false);
-    localStorage.removeItem('jwt');
-    setEmail('');
+  async function handleSignOut() {
+    try {
+      await authenticationApi.pushLogout();
+      setLoggedIn(false);
+    } catch (error) {
+      console.error(`Ошибка при выходе из системы: ${error}`);
   }
+}
 
   function handleCardClick(card) {
     setSelectedCard(card);
@@ -273,7 +265,6 @@ function App() {
               onCardClick={handleCardClick}
               onCardLike={handleCardLike}
               cards={cards}
-              setCards={setCards}
               onCardDelete={handleCardDelete}
             />} />
             <Route path='/sign-up' element={<Register onRegister={handleRegister} />} />

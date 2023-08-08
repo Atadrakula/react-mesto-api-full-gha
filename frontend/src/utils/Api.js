@@ -6,15 +6,15 @@ class Api {
 
   _checkResponse(response) {
     if (!response.ok) {
+      console.error(`Error when requesting ${response.url}. Status code: ${response.status}`);
       return Promise.reject(`Ошибка: ${response.status}`);
     }
     return response.json();
   }
 
   _request(endpoint, options) {
-    // return fetch(`${this._generalUrl}${endpoint}`, { ...options, headers: this._headers }).then(this._checkResponse);
     return fetch(`${this._generalUrl}${endpoint}`, { ...options, headers: this._headers, credentials: 'include' }).then(this._checkResponse);
-  }
+}
 
   pullProfileInfo() {
     return this._request(`/users/me`);
