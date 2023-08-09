@@ -105,13 +105,7 @@ function App() {
   }
 
   async function handleCardLike(targetCard) {
-    console.log("Likes array:", targetCard.likes);
-    console.log("Current user ID:", currentUser._id);
-    console.log(targetCard.likes[0] === currentUser._id);
-    console.log("Type of likes[0]:", typeof targetCard.likes[0]);
-    console.log("Type of currentUser._id:", typeof currentUser._id);
     const isLiked = targetCard.likes.some((i) => i === currentUser._id);
-    console.log("isLiked", isLiked);
 
     try {
       const checkedCard = await api.toggleLikeCard(targetCard._id, !isLiked);
