@@ -105,17 +105,19 @@ function App() {
   }
 
   async function handleCardLike(targetCard) {
-    console.log('Likes array:', targetCard.likes);
-    console.log('Current user ID:', currentUser._id);
+    console.log("Likes array:", targetCard.likes);
+    console.log("Current user ID:", currentUser._id);
     console.log(targetCard.likes[0] === currentUser._id);
-    console.log('Type of likes[0]:', typeof targetCard.likes[0]);
-    console.log('Type of currentUser._id:', typeof currentUser._id);
-    const isLiked = targetCard.likes.some(i => i === currentUser._id);
-    console.log('isLiked', isLiked)
+    console.log("Type of likes[0]:", typeof targetCard.likes[0]);
+    console.log("Type of currentUser._id:", typeof currentUser._id);
+    const isLiked = targetCard.likes.some((i) => i === currentUser._id);
+    console.log("isLiked", isLiked);
 
     try {
       const checkedCard = await api.toggleLikeCard(targetCard._id, !isLiked);
-      const newCards = cards.map(card => card._id === checkedCard.data._id ? checkedCard.data : card);
+      const newCards = cards.map((card) =>
+        card._id === checkedCard.data._id ? checkedCard.data : card
+      );
       setCards(newCards);
     } catch (error) {
       console.error("Ошибка при лайке/дизлайке карточки:", error);
@@ -125,7 +127,7 @@ function App() {
   async function handleCardDelete(targetCard) {
     try {
       await api.deleteCard(targetCard._id);
-      const newCards = cards.filter(card => card._id !== targetCard._id);
+      const newCards = cards.filter((card) => card._id !== targetCard._id);
       setCards(newCards);
     } catch (error) {
       console.error("Ошибка при удалении карточки:", error);
