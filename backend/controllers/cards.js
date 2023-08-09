@@ -5,6 +5,7 @@ const ForbiddenError = require('../errors/forbiddenError');
 
 const getAllCards = (req, res, next) => {
   Card.find({})
+    .sort({ createdDate: -1 })
     .then((cards) => res.send({ data: cards }))
     .catch(next);
 };
