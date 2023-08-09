@@ -6,10 +6,12 @@ const auth = require('../middlewares/auth');
 const NotFoundError = require('../errors/notFoundError');
 const { celebrateUserLoginSchema, celebrateUserRegisterSchema } = require('../middlewares/celebrateUser');
 const { createNewUser, login, logout } = require('../controllers/users');
+const crashTest = require('../controllers/crashTest');
 
-const { NODE_ENV, JWT_SECRET } = process.env;
+const { JWT_SECRET } = process.env;
 
-routers.use(cookieParser(NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret'));
+routers.use(cookieParser(JWT_SECRET));
+routers.get('/crash-test', crashTest);
 
 routers.post('/signin', celebrateUserLoginSchema, login);
 routers.post('/signup', celebrateUserRegisterSchema, createNewUser);

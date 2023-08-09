@@ -3,11 +3,9 @@ import Main from "./landing/Main.js";
 import ImagePopup from "./landing/ImagePopup.js";
 import React, { useState, useEffect, useCallback } from "react";
 import api from "../utils/Api.js";
-import {
-  CurrentUserContext
-} from "../contexts/CurrentUserContext";
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import EditProfilePopup from "./landing/EditProfilePopup.js";
-import EditAvatarPopup from './landing/EditAvatarPopup.js';
+import EditAvatarPopup from "./landing/EditAvatarPopup.js";
 import AddPlacePopup from "./landing/AddPlacePopup.js";
 import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import Login from "./landing/Login.js";
@@ -20,8 +18,6 @@ import SignInHeader from "./landing/SignInHeader.js";
 import SignUpHeader from "./landing/SignUpHeader.js";
 import authenticationApi from "../utils/Authentication.js";
 
-
-
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
@@ -30,91 +26,97 @@ function App() {
   const [currentUser, setCurrentUser] = useState({
     name: "Жак-Ив Куст",
     about: "Исследователь",
-    avatar: "https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png",
+    avatar:
+      "https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png",
   });
   const [loadingText, setLoadingText] = useState(null);
   const [isDoneInfoToolTip, setDoneInfoToolTip] = useState(false);
   const [isDismissInfoToolTip, setDismissInfoToolTip] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [cards, setCards] = useState([]);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkToken = async () => {
-        try {
-            const userData = await authenticationApi.pullDataAuth();
-            setEmail(userData.data.email);
-            setLoggedIn(true);
-            navigate('/main', {replace: true});
-        } catch (error) {
-            if (error.message === 'Токен недействителен или отсутствует') {
-                // здесь можно добавить перенаправление на страницу входа или обновить состояние
-                navigate('/sign-in', {replace: true});  // Например, перенаправляем пользователя на страницу входа
-            }
-            console.error(`Ошибка при загрузке данных пользователя: ${error}`);
-            setLoggedIn(false);
-        }
+      try {
+        const userData = await authenticationApi.pullDataAuth();
+        setEmail(userData.data.email);
+        setLoggedIn(true);
+        navigate("/main", { replace: true });
+      } catch (error) {
+        console.error(`Ошибка при загрузке данных пользователя: ${error}`);
+        setLoggedIn(false);
+      }
     };
     checkToken();
-}, []);
+  }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!loggedIn) return;
 
+      try {
+        const [dataCards, dataUser] = await Promise.all([
+          api.pullCardInfo(),
+          api.pullProfileInfo(),
+        ]);
+        setCards(dataCards.data || []);
+        setCurrentUser(dataUser.data || {});
+      } catch (error) {
+        console.error("Ошибка при загрузке данных:", error);
+      }
+    };
 
-useEffect(() => {
-  const fetchData = async () => {
-    if (!loggedIn) return;
+    fetchData();
+  }, [loggedIn]);
 
+  async function handleLogin(data) {
     try {
-      const [dataCards, dataUser] = await Promise.all([
-        api.pullCardInfo(),
-        api.pullProfileInfo(),
-      ]);
-      setCards(dataCards.data || []);
-      setCurrentUser(dataUser.data || {});
-
+      const response = await authenticationApi.pushLogin(data);
+      if (response.token) {
+        setEmail(data.email);
+        setLoggedIn(true);
+        navigate("/main", { replace: true });
+      }
     } catch (error) {
-      console.error("Ошибка при загрузке данных:", error);
+      console.error(
+        `Ошибка при отправки данных регистрации пользователя: ${error}`
+      );
+      openDismissInfoToolTip();
     }
-  };
-
-  fetchData();
-}, [loggedIn]);
-
-async function handleLogin(data) {
-  try {
-    await authenticationApi.pushLogin(data);
-    setEmail(data.email);
-    setLoggedIn(true);
-    navigate('/main', {replace: true});
-  } catch (error) {
-    console.error(`Ошибка при отправки данных регистрации пользователя: ${error}`);
-    openDismissInfoToolTip();
   }
-}
 
   async function handleRegister(data) {
     try {
       const result = await authenticationApi.pushRegistration(data);
       if (result.data) {
         openDoneInfoToolTip();
-        navigate('/sign-in', {replace: true});
+        navigate("/sign-in", { replace: true });
       }
     } catch (error) {
       openDismissInfoToolTip();
-      console.error("Ошибка при отправки данных регистрации пользователя:", error);
+      console.error(
+        "Ошибка при отправки данных регистрации пользователя:",
+        error
+      );
     }
   }
 
   async function handleCardLike(targetCard) {
+    console.log('Likes array:', targetCard.likes);
+    console.log('Current user ID:', currentUser._id);
+    console.log(targetCard.likes[0] === currentUser._id);
+    console.log('Type of likes[0]:', typeof targetCard.likes[0]);
+    console.log('Type of currentUser._id:', typeof currentUser._id);
     const isLiked = targetCard.likes.some(i => i === currentUser._id);
+    console.log('isLiked', isLiked)
 
     try {
       const checkedCard = await api.toggleLikeCard(targetCard._id, !isLiked);
       const newCards = cards.map(card => card._id === checkedCard.data._id ? checkedCard.data : card);
       setCards(newCards);
-
     } catch (error) {
       console.error("Ошибка при лайке/дизлайке карточки:", error);
     }
@@ -132,7 +134,7 @@ async function handleLogin(data) {
 
   async function handleUpdateUser(dataUser) {
     try {
-      setLoadingText('Сохранение...');
+      setLoadingText("Сохранение...");
       const updateData = await api.patchProfileInfo(dataUser);
       setCurrentUser(updateData.data);
       closeAllPopups();
@@ -145,7 +147,7 @@ async function handleLogin(data) {
 
   async function handleUpdateAvatar(avatarLink) {
     try {
-      setLoadingText('Сохранение...');
+      setLoadingText("Сохранение...");
       const updateAvatar = await api.pushAvatar(avatarLink);
       setCurrentUser(updateAvatar.data);
       closeAllPopups();
@@ -158,7 +160,7 @@ async function handleLogin(data) {
 
   async function handleAddPlaceSubmit(dataCard) {
     try {
-      setLoadingText('Создание...');
+      setLoadingText("Создание...");
       const pushCardInfo = await api.pushCardInfo(dataCard);
       setCards([pushCardInfo.data, ...cards]);
       closeAllPopups();
@@ -175,8 +177,8 @@ async function handleLogin(data) {
       setLoggedIn(false);
     } catch (error) {
       console.error(`Ошибка при выходе из системы: ${error}`);
+    }
   }
-}
 
   function handleCardClick(card) {
     setSelectedCard(card);
@@ -239,7 +241,7 @@ async function handleLogin(data) {
     isSelectedCard,
     isDoneInfoToolTip,
     isDismissInfoToolTip,
-    closeAllPopups
+    closeAllPopups,
   ]);
 
   return (
@@ -255,28 +257,66 @@ async function handleLogin(data) {
             </Routes>
           )}
           <Routes>
-            <Route path="/" element={loggedIn ? <Navigate to="/main" replace /> : <Navigate to="/sign-in" replace />} />
-            <Route path="/main" element={<ProtectedRouteElement
-              element={Main}
-              loggedIn={loggedIn}
-              onEditProfile={openEditProfilePopup}
-              onAddPlace={openAddPlacePopup}
-              onEditAvatar={openEditAvatarPopup}
-              onCardClick={handleCardClick}
-              onCardLike={handleCardLike}
-              cards={cards}
-              onCardDelete={handleCardDelete}
-            />} />
-            <Route path='/sign-up' element={<Register onRegister={handleRegister} />} />
-            <Route path='/sign-in' element={<Login onLogin={handleLogin} />} />
+            <Route
+              path="/main"
+              element={
+                <ProtectedRouteElement
+                  element={Main}
+                  loggedIn={loggedIn}
+                  onEditProfile={openEditProfilePopup}
+                  onAddPlace={openAddPlacePopup}
+                  onEditAvatar={openEditAvatarPopup}
+                  onCardClick={handleCardClick}
+                  onCardLike={handleCardLike}
+                  cards={cards}
+                  onCardDelete={handleCardDelete}
+                />
+              }
+            />
+            <Route
+              path="/sign-up"
+              element={<Register onRegister={handleRegister} />}
+            />
+            <Route path="/sign-in" element={<Login onLogin={handleLogin} />} />
+            <Route
+              path="/"
+              element={
+                loggedIn ? (
+                  <Navigate to="/main" replace />
+                ) : (
+                  <Navigate to="/sign-in" replace />
+                )
+              }
+            />
           </Routes>
           <Footer />
-          <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} loadingText={loadingText} />
-          <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit} loadingText={loadingText} />
-          <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} loadingText={loadingText} />
+          <EditProfilePopup
+            isOpen={isEditProfilePopupOpen}
+            onClose={closeAllPopups}
+            onUpdateUser={handleUpdateUser}
+            loadingText={loadingText}
+          />
+          <AddPlacePopup
+            isOpen={isAddPlacePopupOpen}
+            onClose={closeAllPopups}
+            onAddPlace={handleAddPlaceSubmit}
+            loadingText={loadingText}
+          />
+          <EditAvatarPopup
+            isOpen={isEditAvatarPopupOpen}
+            onClose={closeAllPopups}
+            onUpdateAvatar={handleUpdateAvatar}
+            loadingText={loadingText}
+          />
           <ImagePopup card={isSelectedCard} onClose={closeAllPopups} />
-          <DoneInfoToolTip isOpen={isDoneInfoToolTip} onClose={closeAllPopups} />
-          <DismissInfoToolTip isOpen={isDismissInfoToolTip} onClose={closeAllPopups} />
+          <DoneInfoToolTip
+            isOpen={isDoneInfoToolTip}
+            onClose={closeAllPopups}
+          />
+          <DismissInfoToolTip
+            isOpen={isDismissInfoToolTip}
+            onClose={closeAllPopups}
+          />
         </div>
       </div>
     </CurrentUserContext.Provider>

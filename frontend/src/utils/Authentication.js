@@ -1,3 +1,5 @@
+import serverConfig from "./constants";
+
 class Authentication {
   constructor({ url, headers}) {
     this._generalUrl = url;
@@ -10,7 +12,7 @@ class Authentication {
         console.error(`Error response from ${response.url}: ${response.status}`);
         if (response.status === 401) {
             return Promise.reject('Токен недействителен или отсутствует');
-        }
+          }
         return Promise.reject(`Ошибка: ${response.status}`);
     }
     return response.json();
@@ -53,14 +55,6 @@ class Authentication {
   });
 }
 }
-
-const serverConfig = {
-  // url: 'https://api.web.portfolio.nomoreparties.co',
-  url: 'http://localhost:3001',
-  headers: {
-    'Content-Type': 'application/json'
-  }
-};
 
 const authenticationApi = new Authentication(serverConfig);
 

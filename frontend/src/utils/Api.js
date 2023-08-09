@@ -1,3 +1,5 @@
+import serverConfig from "./constants";
+
 class Api {
   constructor({ url, headers }) {
     this._generalUrl = url;
@@ -79,14 +81,6 @@ class Api {
     });
   }
 }
-
-const serverConfig = {
-  // url: 'https://api.web.portfolio.nomoreparties.co',
-  url: 'http://localhost:3001',
-  headers: {
-    'Content-Type': 'application/json'
-  }
-};
 
 const api = new Api(serverConfig);
 

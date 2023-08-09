@@ -27,15 +27,14 @@ module.exports = (req, res, next) => {
   if (allowedCors.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
   }
+  // разрешаем передачу cookie
+  res.header('Access-Control-Allow-Credentials', 'true');
 
   if (method === 'OPTIONS') {
     // разрешаем кросс-доменные запросы с этими методами
     res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
     // разрешаем кросс-доменные запросы с этими заголовками
     res.header('Access-Control-Allow-Headers', allowedHeaders.join(','));
-    // разрешаем передачу cookie
-    res.header('Access-Control-Allow-Credentials', 'true');
-
     return res.status(200).end();
   }
   return next();

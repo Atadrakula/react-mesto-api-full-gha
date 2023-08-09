@@ -1,19 +1,25 @@
 require('dotenv').config();
+
+if (process.env.NODE_ENV !== 'production') {
+  process.env.PORT = '3001';
+  process.env.NODE_ENV = 'development';
+  process.env.JWT_SECRET = 'dev-secret';
+  process.env.DB_URL = 'mongodb://127.0.0.1:27017/mestodb';
+}
+
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
-const cors = require('cors');
+const cors = require('./middlewares/cors');
 const { errorHandler, celebrateError } = require('./middlewares/errorsHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-// const cors = require('./middlewares/cors');
 
 const routers = require('./routes');
 
 const { PORT, DB_URL } = process.env;
 const app = express();
 
-// app.use(cors());
-app.use(cors({ origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://web.portfolio.nomoreparties.co'], credentials: true, maxAge: 30 }));
+app.use(cors);
 
 mongoose.connect(DB_URL, {
   useNewUrlParser: true,
