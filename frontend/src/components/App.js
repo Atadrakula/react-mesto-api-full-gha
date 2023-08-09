@@ -23,12 +23,7 @@ function App() {
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
   const [isSelectedCard, setSelectedCard] = useState(null);
-  const [currentUser, setCurrentUser] = useState({
-    name: "Жак-Ив Куст",
-    about: "Исследователь",
-    avatar:
-      "https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png",
-  });
+  const [currentUser, setCurrentUser] = useState(null);
   const [loadingText, setLoadingText] = useState(null);
   const [isDoneInfoToolTip, setDoneInfoToolTip] = useState(false);
   const [isDismissInfoToolTip, setDismissInfoToolTip] = useState(false);
