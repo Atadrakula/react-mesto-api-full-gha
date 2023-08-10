@@ -13,6 +13,7 @@ const helmet = require('helmet');
 const cors = require('./middlewares/cors');
 const { errorHandler, celebrateError } = require('./middlewares/errorsHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const apiLimiter = require('./middlewares/apiLimiter');
 
 const routers = require('./routes');
 
@@ -24,6 +25,8 @@ app.use(cors);
 mongoose.connect(DB_URL, {
   useNewUrlParser: true,
 });
+
+app.use(apiLimiter);
 
 app.use(helmet());
 app.use((req, res, next) => {
