@@ -17,7 +17,8 @@
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",
 		"predeploy": "npm run build",
-		"deploy": "gh-pages -d build"
+		"deploy": "gh-pages -d build",
+		"deploy-server": "react-scripts build && scp -r ./build/* mrscriptsmith@158.160.33.205:/home/mrscriptsmith/mesto/frontend/build"
 	},
 	"eslintConfig": {
 		"extends": [
