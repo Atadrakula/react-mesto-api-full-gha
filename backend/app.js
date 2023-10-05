@@ -10,7 +10,7 @@ if (process.env.NODE_ENV !== 'production') {
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
-const cors = require('./middlewares/cors');
+const cors = require('cors');
 const { errorHandler, celebrateError } = require('./middlewares/errorsHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const apiLimiter = require('./middlewares/apiLimiter');
@@ -20,7 +20,13 @@ const routers = require('./routes');
 const { PORT, DB_URL } = process.env;
 const app = express();
 
-app.use(cors);
+const allowedOrigins = [
+  'https://web.portfolio.nomoreparties.co',
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+}));
 
 mongoose.connect(DB_URL, {
   useNewUrlParser: true,
