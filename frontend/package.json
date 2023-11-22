@@ -16,7 +16,7 @@
 		"build": "react-scripts build",
 		"predeploy": "npm run build",
 		"deploy-gh": "gh-pages -d build",
-		"deploy-server": "react-scripts build && scp -r ./build/* mrscriptsmith@158.160.33.205:/home/mrscriptsmith/mesto/frontend/build"
+		"deploy-server": "react-scripts build && scp -r ./build/* mrscriptsmith@158.160.125.30:/home/mrscriptsmith/mesto/frontend"
 	},
 	"eslintConfig": {
 		"extends": [
